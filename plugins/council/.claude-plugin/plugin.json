@@ -1,9 +1,16 @@
 {
   "name": "council",
-  "version": "0.1.0",
-  "description": "A five-agent council (Researcher, Believer, Skeptic, Investor, Judge) that reviews any idea and delivers a rated verdict. Each agent can also be called on its own.",
+  "version": "0.2.0",
+  "description": "A council (Researcher, Recruiter, Believer, Skeptic, Investor, Judge) plus a three-person advisory panel of simulated industry figures picked for each idea, delivering a rated verdict. Each agent can also be called on its own.",
   "author": {
     "name": "David Druker"
   },
-  "keywords": ["idea review", "decision making", "startup", "evaluation", "research"]
+  "keywords": [
+    "idea review",
+    "decision making",
+    "startup",
+    "evaluation",
+    "research",
+    "advisory panel"
+  ]
 }

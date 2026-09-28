@@ -7,14 +7,16 @@ description: This skill should be used when the user asks to "run the council", 
 
 Convene the council to evaluate one idea and deliver a clear verdict. Ideas can range from a new startup to a product feature, a code or architecture change, an internal company process, or a personal life decision.
 
-The council is made up of five agents defined in this plugin. Each one can also be called on its own.
+The council is made up of seven agents defined in this plugin, plus an advisory panel of three simulated industry figures picked for each idea. Each agent can also be called on its own.
 
 | Order | Agent | subagent_type | Role |
 |---|---|---|---|
 | 1 | The Researcher | `council:researcher` | Builds a neutral factual baseline |
+| 1 | The Recruiter | `council:recruiter` | Picks 3 real industry figures for the idea and writes a Persona Brief for each |
 | 2 | The Believer | `council:believer` | Makes the strongest honest case for the idea |
 | 2 | The Skeptic | `council:skeptic` | Attacks the idea and ranks its weaknesses |
 | 2 | The Investor (optional) | `council:investor` | Judges profitability and opportunity only |
+| 2 | The Advisory Panel (×3) | `council:advisor` | Each gives one panelist's simulated perspective from their Persona Brief |
 | 3 | The Judge | `council:judge` | Gives a rated final verdict |
 
 Launch each member with the Agent tool using its `subagent_type`. If the plugin-namespaced type is not available, launch a `general-purpose` agent and paste in the body of the matching file from `${CLAUDE_PLUGIN_ROOT}/agents/` as its instructions. Keep the members separate. Never merge roles or write a member's output yourself.
@@ -32,32 +34,42 @@ Write a short **Idea Card** with these fields:
 
 If the idea is too vague to evaluate, ask one clarifying question first. Otherwise state your assumptions in the Idea Card and proceed. Show the user the Idea Card in one or two lines.
 
-## Step 1: The Researcher (alone, first)
+## Step 1: The Researcher and the Recruiter (in parallel, first)
 
-Launch `council:researcher` with the Idea Card and any files, repos or links the user provided. Tell it to adapt its research to the category. Wait for the Research Brief before moving on.
+In a **single message**, launch both:
+- `council:researcher` with the Idea Card and any files, repos or links the user provided. Tell it to adapt its research to the category.
+- `council:recruiter` with the Idea Card. It picks three real industry figures (an Operator, a Capital & Strategy voice, and a Domain Expert & Contrarian) and returns an Advisory Panel with three Persona Briefs.
 
-## Step 2: The debaters (in parallel)
+Wait for both the Research Brief and the Advisory Panel before moving on. Show the user the three panelists' names and roles in one line.
 
-In a **single message**, launch `council:believer`, `council:skeptic` and, if seated, `council:investor`, so they run in parallel. Pass each one the Idea Card and the full Research Brief. Do not share one debater's output with another.
+## Step 2: The debaters and the advisory panel (in parallel)
+
+In a **single message**, launch all of these so they run in parallel:
+- `council:believer`, `council:skeptic` and, if seated, `council:investor`. Pass each one the Idea Card and the full Research Brief.
+- `council:advisor` **three times**, once per panelist. Pass each instance the Idea Card, the full Research Brief and **only its own** Persona Brief.
+
+Do not share one member's output with another.
 
 ## Step 3: The Judge (last)
 
-Launch `council:judge` with the Idea Card, the Research Brief, and the complete outputs of the Believer, the Skeptic and the Investor. If the Investor was not seated, pass "Not seated: {reason}" in its place.
+Launch `council:judge` with the Idea Card, the Research Brief, the complete outputs of the Believer, the Skeptic and the Investor, and the Advisory Panel (the Recruiter's output plus all three Advisor outputs). If the Investor was not seated, pass "Not seated: {reason}" in its place. Tell the Judge to treat the panel as simulated expert perspectives: weigh their reasoning, not their names.
 
 ## Step 4: Present the result
 
 Lead with the verdict:
 1. The Judge's full verdict block: the verdict, the rating, the breakdown table and the next steps.
 2. A short section titled **"The Council's Arguments"** with 3 to 5 bullets each from the Believer, the Skeptic and the Investor, or a note that the Investor wasn't seated and why. Include each agent's closing score.
-3. The key sources from the Research Brief.
-4. An offer to show the full agent transcripts, or to rerun the council on a revised version of the idea.
+3. A section titled **"The Advisory Panel"** with, for each panelist: their name, role and seat, 2 or 3 bullets of their take, the hardest question they asked, and their score. Put this line under the heading: *Simulated perspectives based on public statements and track records. These are not the real people's views, and they have not reviewed this idea.*
+4. The key sources from the Research Brief.
+5. An offer to show the full agent transcripts, or to rerun the council on a revised version of the idea.
 
-Keep the orchestration quiet. One line such as "The Researcher is gathering context…" followed later by "The council is debating…" is enough.
+Keep the orchestration quiet. One line such as "The Researcher is gathering context and the Recruiter is seating the panel…" followed later by "The council is debating…" is enough.
 
 ## Guardrails
 
-- **The order is mandatory:** Researcher, then the debaters in parallel, then the Judge. Never launch the debaters before the Research Brief exists.
-- **Independence:** the debaters never see each other's output. Only the Judge sees everything.
+- **The order is mandatory:** Researcher and Recruiter, then the debaters and advisors in parallel, then the Judge. Never launch the debaters or advisors before the Research Brief and Advisory Panel exist.
+- **Independence:** the debaters and advisors never see each other's output, and each advisor gets only its own Persona Brief. Only the Judge sees everything.
+- **Simulated personas:** the advisory panel represents real people only as clearly labeled simulations grounded in their public record. Never present invented words as real quotes, and never imply the real person endorsed or reviewed the idea.
 - **No fabrication:** every agent keeps sourced facts separate from estimates.
 - **Proportionality:** scale the depth to the stakes.
 - **Fallback:** if the Agent tool is unavailable, play each role in sequence using the instructions in `${CLAUDE_PLUGIN_ROOT}/agents/*.md`. Write out each role's full output before starting the next, and never revise an earlier role's output.

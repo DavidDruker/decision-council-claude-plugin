@@ -1,6 +1,6 @@
 # Decision Council
 
-A five-agent Claude plugin that reviews any idea and returns a rated verdict. A Researcher, Believer, Skeptic, Investor and Judge debate startups, features, technical changes or life decisions.
+A Claude plugin that reviews any idea and returns a rated verdict. Seven agents (Researcher, Recruiter, Believer, Skeptic, Investor, Advisor and Judge) debate startups, features, technical changes or life decisions, joined by a three-person advisory panel of simulated industry figures picked for each idea.
 
 ## Install
 

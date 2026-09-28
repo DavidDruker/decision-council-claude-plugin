@@ -1,6 +1,6 @@
 {
   "name": "decision-council",
-  "description": "A five-agent Claude plugin that reviews any idea and returns a rated verdict.",
+  "description": "A seven-agent Claude plugin with a per-idea advisory panel that reviews any idea and returns a rated verdict.",
   "owner": {
     "name": "David Druker"
   },
@@ -8,7 +8,8 @@
     {
       "name": "council",
       "source": "./plugins/council",
-      "description": "Five-agent council (Researcher, Believer, Skeptic, Investor, Judge) that reviews any idea and delivers a rated verdict."
+      "version": "0.2.0",
+      "description": "A council (Researcher, Recruiter, Believer, Skeptic, Investor, Judge) plus a three-person advisory panel of simulated industry figures picked for each idea, delivering a rated verdict."
     }
   ]
 }
